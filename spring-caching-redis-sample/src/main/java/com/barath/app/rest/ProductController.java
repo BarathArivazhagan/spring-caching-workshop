@@ -42,11 +42,24 @@ public class ProductController {
         return null;
     }
 
+    @PutMapping(value="/update")
+    public Product updateProduct(@RequestBody  Product product) {
+
+        return this.productService.updateProduct(product);
+
+    }
 
 
-    @Cacheable("/all")
+    @GetMapping("/all")
     public List<Product> getProducts() {
         return this.productService.getProducts();
+    }
+
+    @GetMapping("/clear")
+    public String clearCache(){
+        this.productService.clearCache();
+
+        return "All caches are cleared";
     }
 
 

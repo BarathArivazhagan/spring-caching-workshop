@@ -6,12 +6,14 @@ import com.barath.app.repository.ProductRepository;
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import springfox.documentation.annotations.Cacheable;
 
 import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -36,16 +38,26 @@ public class ProductService {
     }
 
 
-    @Cacheable("productsByName")
+    @Cacheable(value = "productsByName")
     public List<Product> getProductByName(String productName){
-
+        logger.info("Getting product by name {}",productName);
         return this.productRepository.findByProductName(productName);
 
     }
 
+    @CachePut(value = "productsByName",key = "#product.productName")
+    public Product updateProduct(Product product){
+        logger.info("updating the product with details"+product);
+        if(this.productRepository.exists(product.getProductId())){
+            return this.productRepository.save(product);
+        }else{
+            return null;
+        }
+    }
+
     public boolean isProductExists(Product product){
 
-        List<Product> products=this.productRepository.findByLocationAndProductName(product.getLocationName(),product.getProductName());
+        List<Product> products=this.productRepository.findByLocationNameAndProductName(product.getLocationName(),product.getProductName());
         if(products !=null && !products.isEmpty()){
             logger.info("product doesnt exists ");
             return false;
@@ -57,12 +69,25 @@ public class ProductService {
 
     @Cacheable("products")
     public List<Product> getProducts(){
+
+        logger.info("GETTING ALL THE PRODUCTS");
         return this.productRepository.findAll();
     }
 
     @PostConstruct
     public void init(){
 
-        //
+        //initialize some products to test the caching
+        Product product1=new Product("TV","CHENNAI");
+        Product product2=new Product("MOBILE","DELHI");
+        Product product3=new Product("HEADPHONE","MUMBAI");
+        Product product4=new Product("NETWORKCABLE","ANDHRA PRADESH");
+        Product product5=new Product("KEYBOARD","KERALA");
+        this.productRepository.save(Arrays.asList(product1,product2,product3,product4,product5));
+    }
+
+    @CacheEvict(cacheNames = {"productsByName","products"},allEntries = true)
+    public void clearCache(){
+
     }
 }

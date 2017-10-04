@@ -3,8 +3,10 @@ package com.barath.app.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -13,20 +15,20 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
 
+/**
+ * This configuration to be used to override autoconfiguration of redis cache configuration.
+ */
+@Profile("custom")
 @Configuration
 public class RedisCacheConfiguration {
 
 
-    @Value("${redis.hostname}")
+    @Value("${spring.redis.host}")
     private String redisHostName;
 
 
-    @Value("${redis.port}")
+    @Value("${spring.redis.port}")
     private int redisPort;
-
-
-    @Value("${spring.cache.cache-names}")
-    private List<String> cacheNames;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory(){
@@ -48,8 +50,7 @@ public class RedisCacheConfiguration {
     public CacheManager redisCacheManager(RedisTemplate redisTemplate){
 
         RedisCacheManager redisCacheManager=new RedisCacheManager(redisTemplate);
-        redisCacheManager.setCacheNames(cacheNames);
-        redisCacheManager.setDefaultExpiration(1000);
+        redisCacheManager.setUsePrefix(true);
 
         return redisCacheManager;
     }
