@@ -1,4 +1,4 @@
-package com.barath.app.model;
+package com.barath.app.entity;
 
 
 
@@ -6,13 +6,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 
 @Entity
+@Table(name= "PRODUCT")
 public class Product implements Serializable {
 
-    @Id
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @GeneratedValue
     @Column(name="PRODUCT_ID")
     private Long productId;

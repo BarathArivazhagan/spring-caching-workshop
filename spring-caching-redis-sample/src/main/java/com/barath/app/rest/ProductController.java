@@ -1,7 +1,6 @@
 package com.barath.app.rest;
 
-import com.barath.app.model.Product;
-
+import com.barath.app.entity.Product;
 import com.barath.app.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,18 +13,18 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/product",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/products",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ProductController {
 
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private ProductService productService;
+    private final ProductService productService;
 
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
-
-    @PostMapping(value = "/create")
+    
+    @PostMapping(value = "/new")
     public Product createProduct(@RequestBody  Product product) {
 
         return this.productService.createProduct(product);
@@ -33,7 +32,7 @@ public class ProductController {
     }
 
 
-   @GetMapping(value = "/get/")
+   @GetMapping(value = "/byName/")
     public List<Product> getProductByName(@RequestParam(name = "productName") String productName) {
 
         if(!StringUtils.isEmpty(productName)) {
@@ -49,13 +48,18 @@ public class ProductController {
 
     }
 
-
-    @GetMapping("/all")
+    
+    @PostMapping
+    public List<Product> createProducts(@RequestBody List<Product> products) {
+        return this.productService.createProducts(products);
+    }
+    
+    @GetMapping
     public List<Product> getProducts() {
         return this.productService.getProducts();
     }
 
-    @GetMapping("/clear")
+    @PostMapping("/clear")
     public String clearCache(){
         this.productService.clearCache();
 
