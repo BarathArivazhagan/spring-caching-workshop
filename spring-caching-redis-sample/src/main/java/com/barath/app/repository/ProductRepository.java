@@ -1,7 +1,8 @@
 package com.barath.app.repository;
 
-import com.barath.app.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.barath.app.entity.Product;
 
 import java.util.List;
 
